@@ -4,3 +4,4 @@ include
 obstacle*
 pyvenv.cfg
 share
+.gitignore

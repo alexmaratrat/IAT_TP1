@@ -5,7 +5,8 @@ from tensorflow.keras.preprocessing.image import ImageDataGenerator
 import matplotlib.pyplot as plt
 import seaborn as sns
 import numpy as np
-from sklearn.metrics import confusion_matrix
+from sklearn.metrics import confusion_matrix, classification_report
+import pandas as pd
 
 # Charger et préparer les données
 path = "obstacles_dataset"
@@ -32,14 +33,14 @@ model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accur
 # Entraînement du modèle avec historique
 history = model.fit(train_generator, validation_data=val_generator, epochs=10)
 
-# Évaluation
+# Évaluation sur le jeu de validation
 loss, accuracy = model.evaluate(val_generator)
 print(f'Loss: {loss}, Accuracy: {accuracy}')
 
 # Visualisation des métriques d'entraînement
 plt.figure(figsize=(12, 5))
 
-# Courbe d'accuracy
+# Graphique Accuracy
 plt.subplot(1, 2, 1)
 plt.plot(history.history['accuracy'], label='Train Accuracy')
 plt.plot(history.history['val_accuracy'], label='Validation Accuracy')
@@ -48,7 +49,7 @@ plt.xlabel('Epochs')
 plt.ylabel('Accuracy')
 plt.legend()
 
-# Courbe de loss
+# Graphique Loss
 plt.subplot(1, 2, 2)
 plt.plot(history.history['loss'], label='Train Loss')
 plt.plot(history.history['val_loss'], label='Validation Loss')
@@ -58,27 +59,49 @@ plt.ylabel('Loss')
 plt.legend()
 
 plt.tight_layout()
-plt.savefig('training_metrics.png', dpi=300)
+plt.savefig('metrics/training_metrics.png', dpi=300)
 plt.show()
 
-# Calcul et exportation de la matrice de confusion
-val_generator.reset()  # Réinitialise le générateur pour une prédiction cohérente
+# Calcul des prédictions sur le jeu de validation
+val_generator.reset()  # Pour s'assurer de repartir du début
 pred_probs = model.predict(val_generator)
-y_pred = np.argmax(pred_probs, axis=1)  # Prédiction de la classe avec la plus haute probabilité
+y_pred = np.argmax(pred_probs, axis=1)  # Classe prédite pour chaque image
 
-# Vraies étiquettes
+# Récupérer les vraies étiquettes et les noms de classes
 y_true = val_generator.classes
 class_names = list(val_generator.class_indices.keys())
 
-# Calcul de la matrice de confusion
+# Calcul et affichage de la matrice de confusion
 cm = confusion_matrix(y_true, y_pred)
-
-# Affichage de la matrice de confusion
 plt.figure(figsize=(10, 8))
 sns.heatmap(cm, annot=True, fmt='d', cmap='Blues', xticklabels=class_names, yticklabels=class_names)
 plt.xlabel('Prédictions')
 plt.ylabel('Véritables Labels')
 plt.title('Matrice de Confusion')
 plt.tight_layout()
-plt.savefig('confusion_matrix.png', dpi=300)
+plt.savefig('metrics/confusion_matrix.png', dpi=300)
 plt.show()
+
+# Calcul du rapport de classification
+report_dict = classification_report(y_true, y_pred, target_names=class_names, output_dict=True)
+
+# Conversion en DataFrame
+report_df = pd.DataFrame(report_dict).transpose()
+
+# Supprimer la ligne 'accuracy' 
+report_df_cleaned = report_df.drop(['accuracy'], errors='ignore')
+
+# Sélectionner uniquement les colonnes pertinentes
+metrics_to_plot = ['precision', 'recall', 'f1-score']
+report_plot = report_df_cleaned[metrics_to_plot]
+
+# Créer une heatmap
+plt.figure(figsize=(10, 6))
+sns.heatmap(report_plot, annot=True, cmap='YlGnBu', fmt=".2f", cbar=True)
+plt.title('Rapport de Classification - Précision, Rappel, F1-score')
+plt.xlabel('Métriques')
+plt.ylabel('Classes')
+plt.tight_layout()
+
+# Exporter en image PNG
+plt.savefig('metrics/classification_report_heatmap.png', dpi=300)
