@@ -5,3 +5,7 @@ obstacle*
 pyvenv.cfg
 share
 .gitignore
+class*
+conf*
+train*
+model*

@@ -339,16 +339,16 @@ def compare_models(conv_layers_list=[1, 2, 3, 4], learning_rates=[0.001], epochs
 # Configuration principale - modifiez ces valeurs selon vos besoins
 if __name__ == "__main__":
     # Liste des nombres de couches convolutives à tester
-    conv_layers_to_test = [2, 4, 6]
+    conv_layers_to_test = [2,3,4,5, 6]
     
     # Liste des learning rates à tester
-    learning_rates_to_test = [0.001, 0.0001]
+    learning_rates_to_test = [0.001]
     
     # Liste des nombres d'epochs à tester
-    epochs_to_test = [10, 15]
+    epochs_to_test = [10]
     
     # Liste des tailles de kernel à tester
-    kernel_sizes_to_test = [3, 5]
+    kernel_sizes_to_test = [3]
     
     # Lancer la comparaison
     compare_models(conv_layers_to_test, learning_rates_to_test, epochs_to_test, kernel_sizes_to_test)
