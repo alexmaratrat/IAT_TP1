@@ -342,13 +342,13 @@ if __name__ == "__main__":
     conv_layers_to_test = [2]
     
     # Liste des learning rates à tester
-    learning_rates_to_test = [0.001]
+    learning_rates_to_test = [0.1, 0.01, 0.001, 0.0001, 0.00001 ]
     
     # Liste des nombres d'epochs à tester
     epochs_to_test = [10]
     
     # Liste des tailles de kernel à tester
-    kernel_sizes_to_test = [3,5,7]
+    kernel_sizes_to_test = [3]
     
     # Lancer la comparaison
     compare_models(conv_layers_to_test, learning_rates_to_test, epochs_to_test, kernel_sizes_to_test)
